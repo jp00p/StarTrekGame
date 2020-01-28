@@ -266,18 +266,18 @@ def player_examine():
             speak(" A dim, dusty light shines in... ")
             speak(" a hand reaches in to help you to your feet... ")
             speak(" and you see a friendly, youthful face, which says... ")
-            time.sleep(1)
+            time.sleep(2)
             speak(" \"Welcome to Deep Space Nine.\" ")
             time.sleep(1)
             speak(" \"I'm Doctor Julian Bashir.\"", 0.03)
-            time.sleep(1)
+            time.sleep(3)
             print("\n")
             print_row()
             centered(" THE END ")
             print_row()
             time.sleep(1)
-            speak(" ...or is it...? ", 0.8)
-            time.sleep(3)
+            speak(" ...or is it...? ", 0.6)
+            time.sleep(5)
             sys.exit()
             
         
@@ -322,9 +322,9 @@ def trigger(room):
         zonemap['a4']["trigger"] = False
     if(room == 'c7'):
         if(zonemap['c7']["step"] == 4):
-            zonemap['b8']['SIDE_RIGHT'] = 'TL'
+            zonemap['c8']['SIDE_RIGHT'] = 'TL'
             speak("\n"*4)
-            speak(" The Turbolift is unlocked! It's just north of Riker's Boudoir. ")
+            speak(" The Turbolift is unlocked! It's just outside of Riker's Boudoir. ")
             speak("\n"*4)
             zonemap['c7']["trigger"] = False
     if(room == 'c1'):
@@ -345,6 +345,7 @@ def check_puzzle(answer=''):
     # endgame
     if(zonemap[character.location]["room_type"] == 'end'):
         end_step = zonemap[character.location]["step"]
+        #print("Step " + str(end_step))
         if(end_step == 0):
             # requires 7 solved rooms
             if(character.solves < 7):
@@ -373,8 +374,10 @@ def check_puzzle(answer=''):
                 speak(zonemap[character.location]["wrong_3"])
         elif(end_step == 3):
             if(answer == zonemap[character.location]["answer"] or answer == "night bird"):
+                character.room_solved[character.location] = True
                 zonemap[character.location]["step"] = 4
                 speak(" "+zonemap[character.location]["final_response"])
+                trigger('c7')
             else:
                 speak(" Riker plays that song with ease, and finishes quickly.\nStill, you feel your pulse racing and the blood rushing to your face.\n\"Come on, don't you know something more... appropriate for this 'bone?\"")
 
@@ -405,7 +408,7 @@ def check_puzzle(answer=''):
             speak(" You hand over the " + zonemap[character.location]["required_item"])
             speak(zonemap[character.location]["response"])
             # if they have an item to give you
-            if(zonemap[character.location]["given_item"] != False):
+            if(zonemap[character.location]["given_item"] != ""):
                 character.inventory.append(zonemap[character.location]["given_item"])
                 speak(" You receive " + zonemap[character.location]["given_item"])
             character.room_solved[character.location] = True
