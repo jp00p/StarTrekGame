@@ -19,7 +19,7 @@ SOLVED = "This room has been solved" # text for when its solved
 #"SIDE_DOWN" = False # false means you cant go that way
 #"SIDE_LEFT" = 'x3'
 #"SIDE_RIGHT" = 'x4'
-GIVEN_ITEM = "chocolate", "leotard", "cat food"  # gives u this upon solving
+GIVEN_ITEM = False  # gives u this upon solving
 REQUIRED_ITEM = "item1", "item2" # requires this to solve
 REQUIRED_ITEM_2 = "ri1", "ri2"
 RESPONSE = 'thanks' # when you complete the room
@@ -105,6 +105,10 @@ def title_screen_selections():
         help_menu()
     elif option.lower() == ("quit"):
         sys.exit()
+    elif option.lower() == ("skip"):
+        os.system("cls")
+        enter_location()
+
     while option.lower() not in ['play', 'help', 'quit']:
         centered("Please enter a valid command")
         option = input("> ")
@@ -114,6 +118,9 @@ def title_screen_selections():
             help_menu()
         elif option.lower() == ("quit"):
             sys.exit() # cold quit
+        elif option.lower() == ("skip"):
+            os.system("cls")
+            enter_location()
 
 ### Actual title graphic
 def title_screen():
