@@ -25,6 +25,7 @@ riker endgame
 """
 
 #Sets up constant variables for rooms
+# should have just done array keys...
 NAME = 'Name' # name of room
 DESCRIPTION = 'description' # upon entering
 INFO = 'info' # upon 'looking'

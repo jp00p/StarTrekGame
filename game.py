@@ -1,8 +1,10 @@
 import cmd, textwrap, sys, os, time, random, string
+import player
 import game_map # the semi-extensible game map
 import ship # animation???
 screen_width = 79 # for text wrapping & stuff
-zonemap = game_map.level_1 # we could go to level_2 in the future...
+
+
 #Sets up constant variables for rooms
 NAME = 'Name' # name of room
 DESCRIPTION = 'description' # upon entering
@@ -17,7 +19,7 @@ SOLVED = "This room has been solved" # text for when its solved
 #"SIDE_DOWN" = False # false means you cant go that way
 #"SIDE_LEFT" = 'x3'
 #"SIDE_RIGHT" = 'x4'
-GIVEN_ITEM = "chocolate", "undies", "cat food"  # gives u this upon solving
+GIVEN_ITEM = "chocolate", "leotard", "cat food"  # gives u this upon solving
 REQUIRED_ITEM = "item1", "item2" # requires this to solve
 REQUIRED_ITEM_2 = "ri1", "ri2"
 RESPONSE = 'thanks' # when you complete the room
@@ -35,22 +37,9 @@ FINAL_RESPONSE = "res four"
 # hall is just a hall with no interaction yet
 # end room has special requirements to finish
 
-class player: 
-    def __init__(self): 
-        #self.name = ''
-        self.solves = 0
-        self.location = 'b3'
-        self.inventory = ['phaser']
-        self.room_solved = {
-            'a1': False, 'a2' : False, 'a3': False, 'a4': False, 'a5': False, 'a6' : False, 'a7': False, 'a8': False,
-            'b1': False, 'b2' : False, 'b3': False, 'b4': False, 'b5': False, 'b6' : False, 'b7': False, 'b8': False,
-            'c1': False, 'c2' : False, 'c3': False, 'c4': False, 'c5': False, 'c6' : False, 'c7': False, 'c8': False,
-            's1': False, 's2' : False, 'TL': False
-        }
-        #self.game_over = False
-        #self.astrological = ''
-
-character = player() # init player, potentially could save game...
+# setup classes
+zonemap = game_map.level_1 # we could go to level_2 in the future...
+character = player.player() # init player, save game with this object
 text_wrapper = textwrap.TextWrapper(width=screen_width-4)
 
 ### Text utilites
