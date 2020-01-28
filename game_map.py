@@ -317,7 +317,7 @@ level_1 = {
         "wrong": "You don't need to be an empath to know Troi is angry you don't have chocolate.",
 		"room_type": "item_room",
         "answer": "",
-		"solved": False,
+		"solved": "Troi is busy slowly eating every layer of her chocolate.",
         "given_item": "leotard",
         "required_item": "chocolate",
 		"SIDE_UP": False,
