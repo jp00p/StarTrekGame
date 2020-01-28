@@ -4,39 +4,6 @@ import game_map # the semi-extensible game map
 import ship # animation???
 screen_width = 79 # for text wrapping & stuff
 
-
-#Sets up constant variables for rooms
-NAME = 'Name' # name of room
-DESCRIPTION = 'description' # upon entering
-INFO = 'info' # upon 'looking'
-ITEM_REQUEST = 'ask' # when they ask for an item
-PUZZLE = 'puzzle' # question
-PUZZLE_2 = 'puzzle two'
-PUZZLE_3 = 'puzzle tree'
-ANSWER = 'answer' # answer
-SOLVED = "This room has been solved" # text for when its solved
-#"SIDE_UP" = 'x1' # which room each direction will take you
-#"SIDE_DOWN" = False # false means you cant go that way
-#"SIDE_LEFT" = 'x3'
-#"SIDE_RIGHT" = 'x4'
-GIVEN_ITEM = False  # gives u this upon solving
-REQUIRED_ITEM = "item1", "item2" # requires this to solve
-REQUIRED_ITEM_2 = "ri1", "ri2"
-RESPONSE = 'thanks' # when you complete the room
-WRONG = 'wrong answer dummy' # wrong answer 
-ROOM_TYPE = 'quiz_room', 'item_room', 'hall', 'end', 'exit'
-TRIGGER = False
-STEP = 0
-WRONG_2 = "wrong two"
-WRONG_3 = "wrong three"
-RESPONSE_2 = "res two"
-RESPONSE_3 = "res three"
-FINAL_RESPONSE = "res four"
-# quiz_room has a quiz (might give u an item too)
-# item_room requires an item to clear
-# hall is just a hall with no interaction yet
-# end room has special requirements to finish
-
 # setup classes
 zonemap = game_map.level_1 # we could go to level_2 in the future...
 character = player.player() # init player, save game with this object
@@ -80,8 +47,8 @@ def show_exits():
         if(zonemap[character.location][side] != False):
             dest = zonemap[character.location][side]
             go_text = side.replace("SIDE_", "") #+ " " + dest
-            if(zonemap[dest][ROOM_TYPE] != 'hall'):
-                go_text += " (" + zonemap[dest][NAME] + ")"
+            if(zonemap[dest]["room_type"] != 'hall'):
+                go_text += " (" + zonemap[dest]["name"] + ")"
             else:
                 go_text += " (Hallway)"
             centered(go_text)
@@ -92,10 +59,12 @@ def title_screen_selections():
     print("\n"*4)
     print("\n")
     print_row()
-    block_type("Type a command:")
-    block_type("play")
-    block_type("help")
-    block_type("quit")
+    print("\n")
+    block_type("Type a command to begin:")
+    centered("play")
+    centered("help")
+    centered("quit")
+    print("\n")
     print_row()
     
     option = input("> ")
@@ -127,22 +96,26 @@ def title_screen():
     os.system('mode con: cols='+str(screen_width)+' lines=40')
     print(
 r'''
-             ____ _____ ___     ____      _____ ____    _____ _ ___
-            / __//____//__ \   /__  \    /____//__  \  /____//_X__/
-           ( (    __   __| |   ___) /     __   ___) / ____  ___ 
-            \ \  / / ,/,/| |  /   _/     / /  /   _/ / __/ / _ \        
-         ____) )/ /,/ /__| | / /\ \     / /  / /\ \ / /__ / / \ \   
-        /_____//_//________|/_/ /_/    /_/  /_/ /_//____//_/   \_\  
-  ___      _          _    ___     __   _       _  _  __  ___    __
-   |  |_| |_    |\ | |_ \/  |     | _  |_ |\ | |_ |_)   |  |  | |  | |\ |
-   |  | | |_    | \| |_ /\  |     |__| |_ | \| |_ | \ /_|  |  | |__| | \|
+              ____ _____ ___     ____      _____ ____    _____ _ ___
+             / __//____//__ \   /__  \    /____//__  \  /____//_X__/
+            ( (    __   __| |   ___) /     __   ___) / ____  ___ 
+             \ \  / / ,/,/| |  /   _/     / /  /   _/ / __/ / _ \        
+          ____) )/ /,/ /__| | / /\ \     / /  / /\ \ / /__ / / \ \   
+         /_____//_//________|/_/ /_/    /_/  /_/ /_//____//_/   \_\  
+   ___      _          _    ___     __   _       _  _  __  ___    __
+    |  |_| |_    |\ | |_ \/  |     | _  |_ |\ | |_ |_)   |  |  | |  | |\ |
+    |  | | |_    | \| |_ /\  |     |__| |_ | \| |_ | \ /_|  |  | |__| | \|
 
-
-    ¸,ø¤º°`°º¤ø,¸¸,ø¤º° RIKER'S EROTIC QUIZ LABYRINTH °º¤ø,¸¸,ø¤º°`°º¤ø,¸                        
-                 
-
-    '''
-    )
+'''
+)
+    time.sleep(0.5)
+    centered(" ¸,ø¤º°`°º¤ø,¸¸,ø¤º° RIKER'S EROTIC QUIZ LABYRINTH °º¤ø,¸¸,ø¤º°`°º¤ø,¸ ")
+    time.sleep(1)
+    centered("version 0.1")
+    centered("Programming - jp00p")
+    centered("Quality Assurance - Kimmi")
+    
+    centered(" (a work of satire made in good humor with no purpose) ")
 
     title_screen_selections()
 
@@ -171,11 +144,11 @@ def help_menu():
 def enter_location():
     print_row()
     centered("Sector " + character.location.upper())
-    if(zonemap[character.location][ROOM_TYPE] != "hall"):
+    if(zonemap[character.location]["room_type"] != "hall"):
         #enter a room
-        centered(zonemap[character.location][NAME])
+        centered(zonemap[character.location]["name"])
         centered(" ----- ")
-        centered(zonemap[character.location][DESCRIPTION])
+        centered(zonemap[character.location]["description"])
     else:
         #enter a hall
         #todo: rando the dialog
@@ -198,26 +171,38 @@ def prompt():
     block_type('What would you like to do? (move, look, inventory, status, quit)')
     action = input("> ")
     acceptable_actions = ['status', 'teleport', 'inventory', 'items', 'i', 'move', 'go', 'travel', 'walk', 'quit', 'examine', 'inspect', 'interact', 'look']
-    while action.lower() not in acceptable_actions:
+    parsed_action = action.lower()
+    compound_action = parsed_action.split()
+      
+        
+    while parsed_action not in acceptable_actions and compound_action[0] not in acceptable_actions:
         print("\n Unknown action")
         action = input("> ")
+        parsed_action = action.lower()
+        compound_action = parsed_action.split()
     
-    if action.lower() == 'quit':
+    if(len(compound_action) > 1 and compound_action[0] == "move"):
+        if(compound_action[0] in ['move', 'go', 'travel', 'walk'] and compound_action[1] in ['up','down','left','right']):
+            destination = zonemap[character.location]["SIDE_" + compound_action[1].upper()]
+            movement_handler(destination)
+
+    if parsed_action == 'quit':
         sys.exit()
-    if action.lower() in ['inventory', 'items', 'i']:
+    if parsed_action in ['inventory', 'items', 'i']:
         print_row()
         display_inventory()
-    if action.lower() == 'status':
+    if parsed_action == 'status':
         print_row()
         print("Score: " + str(character.solves))
         prompt()
-    if action.lower() in ['move', 'go', 'travel', 'walk']:
+    if parsed_action in ['move', 'go', 'travel', 'walk']:
         player_move(action.lower())
-    if action.lower() == 'teleport':
+    if parsed_action == 'teleport':
         dest = input("Where to? > ")
         movement_handler(dest)
-    elif action.lower() in ['examine', 'inspect', 'interact', 'look']:
+    elif parsed_action in ['examine', 'inspect', 'interact', 'look']:
         player_examine()
+    prompt()
 
 def player_move(action):
     centered("Which direction would you like to " + action.lower() + " to?")
@@ -248,15 +233,15 @@ def movement_handler(dest):
     else:
         #current room check...
         move_text = " "
-        if(zonemap[character.location][ROOM_TYPE] != 'hall'): 
-            move_text += "You leave " + zonemap[character.location][NAME] + "\n"
+        if(zonemap[character.location]["room_type"] != 'hall'): 
+            move_text += "You leave " + zonemap[character.location]["name"] + "\n"
 
         character.location = dest # update location
 
-        if(zonemap[character.location][ROOM_TYPE] == 'hall'):
+        if(zonemap[character.location]["room_type"] == 'hall'):
             move_text += "You enter a hallway\n"
         else:
-            move_text += "You enter " + zonemap[character.location][NAME] + "\n"
+            move_text += "You enter " + zonemap[character.location]["name"] + "\n"
         speak(move_text)
         enter_location()
 
@@ -265,10 +250,10 @@ def movement_handler(dest):
 def player_examine():
     if character.room_solved[character.location]:
         # puzzle already solved
-        centered(zonemap[character.location][SOLVED])
+        centered(zonemap[character.location]["solved"])
     else:
         # end of game
-        if(zonemap[character.location][ROOM_TYPE] == "exit"):
+        if(zonemap[character.location]["room_type"] == "exit"):
             os.system("cls")
             speak(" You instruct the Turbolift to take you anywhere else! ")
             speak(" Nearly overcome with love, lust and confusion, you slump against the floor and begin laughing. ")
@@ -297,27 +282,27 @@ def player_examine():
             
         
         # quiz room look
-        if(zonemap[character.location][ROOM_TYPE] == "quiz_room"):
-            speak(" "+zonemap[character.location][INFO]) # intro
-            speak(" "+zonemap[character.location][PUZZLE]) # question
+        if(zonemap[character.location]["room_type"] == "quiz_room"):
+            speak(" "+zonemap[character.location]["info"]) # intro
+            speak(" "+zonemap[character.location]["puzzle"]) # question
             puzzle_answer = input("?> ")
             check_puzzle(puzzle_answer)
         # item room look
-        elif(zonemap[character.location][ROOM_TYPE] == "item_room"):
-            speak(" "+zonemap[character.location][INFO]) # intro
+        elif(zonemap[character.location]["room_type"] == "item_room"):
+            speak(" "+zonemap[character.location]["info"]) # intro
             check_puzzle()
         # end room look
-        elif(zonemap[character.location][ROOM_TYPE] == "end"):
-            if(zonemap[character.location][STEP] == 0):
-                speak(" "+zonemap[character.location][INFO]) # intro
-                speak(" "+zonemap[character.location][PUZZLE]) # step 1
-            elif(zonemap[character.location][STEP] == 1):
-                speak(" "+zonemap[character.location][INFO]) # intro
-                speak(" "+zonemap[character.location][PUZZLE_2]) # step 2
-            elif(zonemap[character.location][STEP] == 2):
-                speak(" "+zonemap[character.location][INFO]) # intro
-                speak(" "+zonemap[character.location][PUZZLE_3]) # step 3
-            elif(zonemap[character.location][STEP] == 3):
+        elif(zonemap[character.location]["room_type"] == "end"):
+            if(zonemap[character.location]["step"] == 0):
+                speak(" "+zonemap[character.location]["info"]) # intro
+                speak(" "+zonemap[character.location]["puzzle"]) # step 1
+            elif(zonemap[character.location]["step"] == 1):
+                speak(" "+zonemap[character.location]["info"]) # intro
+                speak(" "+zonemap[character.location]["puzzle_2"]) # step 2
+            elif(zonemap[character.location]["step"] == 2):
+                speak(" "+zonemap[character.location]["info"]) # intro
+                speak(" "+zonemap[character.location]["puzzle_3"]) # step 3
+            elif(zonemap[character.location]["step"] == 3):
                 speak(" \"Now... What song should I play?\"")
                 puzzle_answer = input("?> ")
                 check_puzzle(puzzle_answer)
@@ -334,20 +319,20 @@ def trigger(room):
         speak("\n"*4)
         speak(" You hear something change somewhere nearby... ")
         speak("\n"*4)
-        zonemap['a4'][TRIGGER] = False
+        zonemap['a4']["trigger"] = False
     if(room == 'c7'):
-        if(zonemap['c7'][STEP] == 4):
+        if(zonemap['c7']["step"] == 4):
             zonemap['b8']['SIDE_RIGHT'] = 'TL'
             speak("\n"*4)
             speak(" The Turbolift is unlocked! It's just north of Riker's Boudoir. ")
             speak("\n"*4)
-            zonemap['c7'][TRIGGER] = False
+            zonemap['c7']["trigger"] = False
     if(room == 'c1'):
         zonemap['b1']['SIDE_LEFT'] = 's1'
         speak("\n"*4)
         speak(" You hear something change somewhere nearby... ")
         speak("\n"*4)
-        zonemap['c1'][TRIGGER] = False
+        zonemap['c1']["trigger"] = False
         
 
 
@@ -358,82 +343,82 @@ def check_puzzle(answer=''):
         answer = answer.translate(str.maketrans('', '', string.punctuation)).lower().strip()
 
     # endgame
-    if(zonemap[character.location][ROOM_TYPE] == 'end'):
-        end_step = zonemap[character.location][STEP]
+    if(zonemap[character.location]["room_type"] == 'end'):
+        end_step = zonemap[character.location]["step"]
         if(end_step == 0):
             # requires 7 solved rooms
             if(character.solves < 7):
-                speak(" "+zonemap[character.location][WRONG])
+                speak(" "+zonemap[character.location]["wrong"])
             else:
                 # increase step
-                speak(" "+zonemap[character.location][RESPONSE])
-                zonemap[character.location][STEP] = 1
+                speak(" "+zonemap[character.location]["response"])
+                zonemap[character.location]["step"] = 1
         elif(end_step == 1):   
             # requires trombone 
-            if(zonemap[character.location][REQUIRED_ITEM] in character.inventory):
-                character.inventory.remove(zonemap[character.location][REQUIRED_ITEM])
+            if(zonemap[character.location]["required_item"] in character.inventory):
+                character.inventory.remove(zonemap[character.location]["required_item"])
                 speak(" You hand Riker the bone.")
-                speak(" "+zonemap[character.location][RESPONSE_2])
-                zonemap[character.location][STEP] = 2
+                speak(" "+zonemap[character.location]["response_2"])
+                zonemap[character.location]["step"] = 2
             else:
-                speak(" "+zonemap[character.location][WRONG_2])
+                speak(" "+zonemap[character.location]["wrong_2"])
         elif(end_step == 2):
             # requires bone oil
-            if(zonemap[character.location][REQUIRED_ITEM_2] in character.inventory):
-                character.inventory.remove(zonemap[character.location][REQUIRED_ITEM_2])
+            if(zonemap[character.location]["required_item_2"] in character.inventory):
+                character.inventory.remove(zonemap[character.location]["required_item_2"])
                 speak(" You slide Riker the 'bone oil.")
-                speak(" "+zonemap[character.location][RESPONSE_3])
-                zonemap[character.location][STEP] = 3
+                speak(" "+zonemap[character.location]["response_3"])
+                zonemap[character.location]["step"] = 3
             else:
-                speak(zonemap[character.location][WRONG_3])
+                speak(zonemap[character.location]["wrong_3"])
         elif(end_step == 3):
-            if(answer == zonemap[character.location][ANSWER] or answer == "night bird"):
-                zonemap[character.location][STEP] = 4
-                speak(" "+zonemap[character.location][FINAL_RESPONSE])
+            if(answer == zonemap[character.location]["answer"] or answer == "night bird"):
+                zonemap[character.location]["step"] = 4
+                speak(" "+zonemap[character.location]["final_response"])
             else:
                 speak(" Riker plays that song with ease, and finishes quickly.\nStill, you feel your pulse racing and the blood rushing to your face.\n\"Come on, don't you know something more... appropriate for this 'bone?\"")
 
     # quiz_room
-    if(zonemap[character.location][ROOM_TYPE] == 'quiz_room'):
+    if(zonemap[character.location]["room_type"] == 'quiz_room'):
         # correct answer quiz_room
         # print(" answer debug: " + answer)
-        if(answer != zonemap[character.location][ANSWER]):
-            speak(" "+zonemap[character.location][WRONG])
+        if(answer != zonemap[character.location]["answer"]):
+            speak(" "+zonemap[character.location]["wrong"])
             block_type("Wrong answer. Look again or move on.")
             prompt()
         else:
             character.room_solved[character.location] = True
             character.solves += 1
-            speak(zonemap[character.location][RESPONSE])
+            speak(zonemap[character.location]["response"])
             # if they have an item to give you
-            if(zonemap[character.location][GIVEN_ITEM] != False):
-                character.inventory.append(zonemap[character.location][GIVEN_ITEM])
-                speak(" You receive " + zonemap[character.location][GIVEN_ITEM])
+            if(zonemap[character.location]["given_item"] != ""):
+                character.inventory.append(zonemap[character.location]["given_item"])
+                speak(" You receive " + zonemap[character.location]["given_item"])
             block_type("You have solved this room. Onwards!")
             block_type("Rooms solved: " + str(character.solves))
     
-    if(zonemap[character.location][ROOM_TYPE] == 'item_room'): # item room handling
-        speak(zonemap[character.location][ITEM_REQUEST]) # item demand
-        if zonemap[character.location][REQUIRED_ITEM] in character.inventory:
+    if(zonemap[character.location]["room_type"] == 'item_room'): # item room handling
+        speak(zonemap[character.location]["item_request"]) # item demand
+        if zonemap[character.location]["required_item"] in character.inventory:
             # give item
-            character.inventory.remove(zonemap[character.location][REQUIRED_ITEM])
-            speak(" You hand over the " + zonemap[character.location][REQUIRED_ITEM])
-            speak(zonemap[character.location][RESPONSE])
+            character.inventory.remove(zonemap[character.location]["required_item"])
+            speak(" You hand over the " + zonemap[character.location]["required_item"])
+            speak(zonemap[character.location]["response"])
             # if they have an item to give you
-            if(zonemap[character.location][GIVEN_ITEM] != False):
-                character.inventory.append(zonemap[character.location][GIVEN_ITEM])
-                speak(" You receive " + zonemap[character.location][GIVEN_ITEM])
+            if(zonemap[character.location]["given_item"] != False):
+                character.inventory.append(zonemap[character.location]["given_item"])
+                speak(" You receive " + zonemap[character.location]["given_item"])
             character.room_solved[character.location] = True
             character.solves += 1
             block_type("You have solved this room. Onwards!")
             block_type("Rooms solved: " + str(character.solves))
         else: # player doesnt have the item
-            speak(" "+zonemap[character.location][WRONG])
+            speak(" "+zonemap[character.location]["wrong"])
             print_row()
-            block_type("You don't have the required item! Find the " + zonemap[character.location][REQUIRED_ITEM] + "!")
+            block_type("You don't have the required item! Find the " + zonemap[character.location]["required_item"] + "!")
 
     # if the room has a trigger when solved, run it
-    if(character.room_solved[character.location] == True and zonemap[character.location][TRIGGER] == True):
+    if(character.room_solved[character.location] == True and zonemap[character.location]["trigger"] == True):
         trigger(character.location)
 
     prompt()    
