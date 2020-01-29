@@ -171,15 +171,14 @@ def prompt():
     block_type('What would you like to do? (move, look, inventory, status, quit)')
     action = input("> ")
     acceptable_actions = ['status', 'teleport', 'inventory', 'items', 'i', 'move', 'go', 'travel', 'walk', 'quit', 'examine', 'inspect', 'interact', 'look']
-    parsed_action = action.lower()
-    compound_action = parsed_action.split()
-      
+    compound_action = action.lower().split()
+    parsed_action = compound_action[0]
         
-    while parsed_action not in acceptable_actions and compound_action[0] not in acceptable_actions:
+    while parsed_action not in acceptable_actions:
         print("\n Unknown action")
         action = input("> ")
-        parsed_action = action.lower()
-        compound_action = parsed_action.split()
+        compound_action = action.lower().split()
+        parsed_action = compound_action[0]
     
     if(len(compound_action) > 1 and compound_action[0] == "move"):
         if(compound_action[0] in ['move', 'go', 'travel', 'walk'] and compound_action[1] in ['up','down','left','right']):
